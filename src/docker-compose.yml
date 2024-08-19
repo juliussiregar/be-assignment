@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=mongodb+srv://admin:admin123@cluster0.hsz3zgr.mongodb.net/supertokens?retryWrites=true&w=majority&ssl=true
+      - CONNECTION_URI=http://localhost:3567
+    depends_on:
+      - supertokens
+    networks:
+      - app-network
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-mongodb
+    ports:
+      - "3567:3567"
+    environment:
+      - MONGODB_CONNECTION_URI=mongodb+srv://admin:admin123@cluster0.hsz3zgr.mongodb.net/supertokens
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

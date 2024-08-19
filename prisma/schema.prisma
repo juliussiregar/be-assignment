@@ -1,0 +1,41 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  name      String?
+  password  String
+  accounts  Account[] @relation("UserAccounts")
+}
+
+model Account {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation("UserAccounts", fields: [userId], references: [id])
+  accountType String
+  balance   Float    @default(0.0)
+  transactions Transaction[] @relation("AccountTransactions")
+}
+
+model Transaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  accountId   String
+  account     Account  @relation("AccountTransactions", fields: [accountId], references: [id])
+  amount      Float
+  currency    String
+  status      String
+  timestamp   DateTime @default(now())
+}
